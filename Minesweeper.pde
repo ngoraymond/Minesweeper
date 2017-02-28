@@ -6,6 +6,7 @@ private int NUM_ROWS = 20;
 private int NUM_COLS = 20;
 private MSButton[][] buttons; //2d array of minesweeper buttons
 private ArrayList <MSButton> bombs; //ArrayList of just the minesweeper buttons that are mined
+private boolean isLost;
 void setup ()
 {
     size(400, 400);
@@ -40,17 +41,23 @@ public void setBombs()
 public void draw ()
 {
     background( 0 );
-    if(isWon())
+    if(isWon() && !isLost)
         displayWinningMessage();
 }
 public boolean isWon()
 {
     //your code here
-
-    return false;
+    for(int i=0;i<NUM_ROWS;i++)
+        for(int j=0;j<NUM_COLS;j++)
+            if(!bombs.contains(buttons[i][j]) && !buttons[i][j].isClicked())
+                    return false;
+    return true;
+          
+    
 }
 public void displayLosingMessage()
 {
+    isLost=true;
     for(int i=0;i<NUM_ROWS;i++)
         for(int j=0;j<NUM_COLS;j++)
         {
@@ -67,6 +74,15 @@ public void displayLosingMessage()
 public void displayWinningMessage()
 {
     //your code here
+   for(int i=0;i<NUM_ROWS;i++)
+        for(int j=0;j<NUM_COLS;j++)
+        {
+            buttons[i][j].setClicked();
+            if(!bombs.contains(buttons[i][j]))
+                buttons[i][j].setLabel(":)");
+        }
+    for(int i=0;i<bombs.size();i++)
+        bombs.get(i).setMarked();
 }
 
 public class MSButton
@@ -92,6 +108,11 @@ public class MSButton
     {
         return marked;
     }
+    public void setMarked()
+    {
+        if(!marked)
+            marked=true;
+    }
     public boolean isClicked()
     {
         return clicked;
@@ -100,7 +121,10 @@ public class MSButton
     public void setClicked()
     {
         if(!clicked)
+        {
             clicked=true;
+            marked=false;
+        }
     }
     
     public void mousePressed () 
@@ -113,9 +137,9 @@ public class MSButton
             if(!marked)
                 clicked=false;
         }
-        else if (bombs.contains(this))
+        else if (bombs.contains(this) && !isWon())
             displayLosingMessage();
-        else if (countBombs(r,c)>0)
+        else if (countBombs(r,c)>0 && !isLost)
             setLabel(str(countBombs(r,c)));
         else
         {
