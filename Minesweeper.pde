@@ -131,25 +131,27 @@ public class MSButton
     {
         clicked = true;
         //your code here
-        if(keyPressed)
+        if(!isWon() && !isLost)
         {
-            marked=!marked;
-            if(!marked)
-                clicked=false;
+            if(keyPressed)
+            {
+                marked=!marked;
+                if(!marked)
+                    clicked=false;
+            }
+            else if (bombs.contains(this))
+                displayLosingMessage();
+            else if (countBombs(r,c)>0)
+                setLabel(str(countBombs(r,c)));
+            else
+            {
+                for(int i=-1;i<2;i++)
+                    for(int j=-1;j<2;j++)
+                        if(isValid(r+i,c+j))
+                            if(!buttons[r+i][c+j].isClicked())
+                                buttons[r+i][c+j].mousePressed();
+            }
         }
-        else if (bombs.contains(this) && !isWon())
-            displayLosingMessage();
-        else if (countBombs(r,c)>0 && !isLost)
-            setLabel(str(countBombs(r,c)));
-        else
-        {
-            for(int i=-1;i<2;i++)
-                for(int j=-1;j<2;j++)
-                    if(isValid(r+i,c+j))
-                        if(!buttons[r+i][c+j].isClicked())
-                            buttons[r+i][c+j].mousePressed();
-        }
-
 
     }
 
